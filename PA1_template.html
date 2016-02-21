@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Make a histogram of the total number of steps taken each day</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<p>######First Set Working Directory##########
+setwd(&ldquo;C:/Users/DiogoNina/Desktop&rdquo;)</p>
+
+<p>######Read data from assignment1######
+peerassignment1 &lt;- read.csv(&ldquo;activity.csv&rdquo;, as.is = TRUE)</p>
+
+<p>######Process/transform the data (if necessary) into a format suitable for your analysis (remove the missing data)#####</p>
+
+<p>nomissing_peerassignment1 &lt;- peerassignment1[complete.cases(peerassignment1), ]</p>
+
+<p>######1 Calculate the total number of steps taken per day#####
+dailysteps &lt;- aggregate(steps ~ date, nomissing_peerassignment1, sum)
+View(dailysteps)</p>
+
+<h6>Make a histogram of the total number of steps taken each day</h6>
+
+<p>plot1 &lt;- hist(dailysteps$steps, main = &ldquo;Graph number of steps taken each day&rdquo;, xlab = &ldquo;Daily steps&rdquo;)
+print(plot1)</p>
+
+<h6>Calculate and report the mean and median of the total number of steps taken per day</h6>
+
+<p>round(mean(dailysteps$steps))
+[1] 10766</p>
+
+<p>median(dailysteps$steps)
+[1] 10765</p>
+
+<p>######Make a time series plot (i.e. type = &ldquo;l&rdquo;) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)######
+mean_steps_interval &lt;- aggregate(steps ~ interval, nomissing_peerassignment1, mean)
+mean_daily_steps &lt;- aggregate(steps ~ date, nomissing_peerassignment1, mean)</p>
+
+<p>plot2 &lt;- plot(mean_steps_interval$interval, mean_steps_interval$steps, type=&#39;l&#39;, col=1, main=&ldquo;MEan number of steps for Interval&rdquo;, xlab=&ldquo;Intervals of time&rdquo;, ylab=&ldquo;Mean number of steps&rdquo;)
+print(plot2)</p>
+
+<h6>Answer question Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?</h6>
+
+<p>which_interval &lt;- which.max(mean_steps_interval$steps)
+print (paste(&ldquo;This is the interval with maximun number of steps&rdquo;, mean_steps_interval[which_interval, ]$interval, &ldquo; the number of steps for this interval: &rdquo;, round(mean_steps_interval[which_interval, ]$steps, digits = 1)))</p>
+
+<p>######Imputing missing values######</p>
+
+<p>######Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)######</p>
+
+<p>missing_values_calculation &lt;- peerassignment1[!complete.cases(peerassignment1), ]</p>
+
+<p>nrow(missing_values_calculation)
+Devise a strategy for filling in all of the missing values in the dataset</p>
+
+<p>######Devise a strategy for filling in all of the missing values in the dataset#######</p>
+
+<h6>Search in each row for NA in number of steps, find the interval for this specific row, find the mean for that interval in in the dataset mean_steps_interval and replace the NA value for this specific mean value</h6>
+
+<h6>Search in each row for NA in number of steps, find the interval for this specific row, find the mean for that interval in in the dataset mean_steps_interval and replace the NA value for this specific mean value</h6>
+
+<p>for (i in 1:nrow(peerassignment1)) {
+  if(is.na(peerassignment1$steps[i])) {
+    val &lt;- mean_steps_interval$steps[which(mean_steps_interval$interval == peerassignment1$interval[i])]
+    peerassignment1$steps[i] &lt;- val 
+  }
+}</p>
+
+<p>####### Create a new dataset that is equal to the original dataset but with the missing data filled in.#######
+daily_steps_missing_replaced &lt;- aggregate(steps ~ date, peerassignment1, sum)</p>
+
+<p>####### Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?#####</p>
+
+<p>plot3 &lt;- hist(daily_steps_missing_replaced$steps, main = &ldquo;Histogram Graph of number of daily steps with the missing data replaced&rdquo;, xlab = &ldquo;Daily Steps&rdquo;)
+print(plot3)</p>
+
+<p>#####Mean######</p>
+
+<p>round(mean(daily_steps_missing_replaced$steps))
+[1] 10766</p>
+
+<p>####Median####
+median(daily_steps_missing_replaced$steps)
+[1] 10766.19</p>
+
+<p>#####Are there differences in activity patterns between weekdays and weekends?#####</p>
+
+<p>#####Create a new factor variable in the dataset with two levels - &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo; indicating whether a given date is a weekday or weekend day.#####</p>
+
+<p>week_day &lt;- function(date_val) {
+  wd &lt;- weekdays(as.Date(date_val, &#39;%Y-%m-%d&#39;))
+  if  (!(wd == &#39;Saturday&#39; || wd == &#39;Sunday&#39;)) {
+    x &lt;- &#39;Weekday&#39;
+  } else {
+    x &lt;- &#39;Weekend&#39;
+  }
+  x
+}</p>
+
+<p>peerassignment1$kind_day &lt;- as.factor(sapply(peerassignment1$date, week_day))</p>
+
+<p>#load the ggplot library
+library(ggplot2)</p>
+
+<p>#####Create aggragated dataframe by interval and kind of day (weekends or weekdays)####</p>
+
+<p>daily_steps_missing_replaced &lt;- aggregate(steps ~ interval+kind_day, peerassignment1, mean)</p>
+
+<p>plot4 &lt;- ggplot(daily_steps_missing_replaced, aes(interval, steps)) +    geom_line(stat = &ldquo;identity&rdquo;, aes(colour = kind_day)) +
+  theme_gray() +
+  facet_grid(kind_day ~ ., scales=&ldquo;fixed&rdquo;, space=&ldquo;fixed&rdquo;) +
+  labs(x=&ldquo;Time interval&rdquo;, y=expression(&ldquo;Steps #&rdquo;)) +
+  ggtitle(&ldquo;Steps # Interval by kind of day&rdquo;)
+print(plot4)</p>
+
+</body>
+
+</html>
